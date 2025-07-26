@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const verifyToken = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -11,9 +11,11 @@ export const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.id }; // attach user ID to request
+    req.user = { id: decoded.id }; // <- This must be correct
     next();
   } catch (err) {
-    return res.status(403).json({ message: "Invalid token" });
+    res.status(403).json({ message: "Forbidden" });
   }
 };
+
+export default authMiddleware;
